@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/fastid/fastid/internal/app/http"
 
 func main() {
-	fmt.Println("FastID")
+	http.HTTP()
 }
