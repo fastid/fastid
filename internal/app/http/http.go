@@ -1,0 +1,102 @@
+package http
+
+import (
+	"context"
+	"fmt"
+	"github.com/fastid/fastid/internal/config"
+	"github.com/fastid/fastid/internal/db"
+	"github.com/fastid/fastid/internal/logger"
+	"github.com/fastid/fastid/internal/migrations"
+	"github.com/labstack/echo-contrib/prometheus"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/sirupsen/logrus"
+	internalLog "log"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
+)
+
+func HTTP() {
+
+	// Configs
+	cfg, err := config.New()
+	if err != nil {
+		internalLog.Fatalln(err.Error())
+	}
+
+	// Logger
+	log := logger.New(cfg)
+	log.Infoln("Starting the server")
+
+	// Echo
+	e := echo.New()
+	e.HideBanner = true
+	e.HidePort = true
+
+	// Prometheus
+	prom := prometheus.NewPrometheus("fastid", nil)
+	prom.Use(e)
+
+	// Middleware
+	e.Use(middleware.RequestID())
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogURI:       true,
+		LogStatus:    true,
+		LogRequestID: true,
+		LogValuesFunc: func(c echo.Context, values middleware.RequestLoggerValues) error {
+			log.WithFields(logrus.Fields{
+				"uri":          values.URI,
+				"status":       values.Status,
+				"x-request-id": values.RequestID,
+			}).Info("request")
+
+			return nil
+		}},
+	))
+
+	// CORS
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+
+	// Context
+	ctx := context.Background()
+
+	// DB
+	database, err := db.New(cfg, ctx)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	// Migrations
+	migration, err := migrations.New(cfg, database)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	if err = migration.Upgrade(); err != nil {
+		log.Infof("migration %s", err.Error())
+	}
+
+	fmt.Println(database)
+
+	// Http server
+	go func() {
+		if err := e.Start(cfg.HTTP.Listen); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("Shutting down the server")
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	ctxShutdown, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctxShutdown); err != nil {
+		e.Logger.Fatal(err)
+	}
+
+}
