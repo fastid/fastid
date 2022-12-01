@@ -42,36 +42,33 @@ type (
 func New() (*Config, error) {
 	cfg := &Config{}
 
-	fileInfo, err := os.Stat("configs/fastid.yml")
+	fileInfo, _ := os.Stat("configs/fastid.yml")
 	if fileInfo != nil {
-		err = cleanenv.ReadConfig("configs/fastid.yml", cfg)
-		if err != nil {
+		if err := cleanenv.ReadConfig("configs/fastid.yml", cfg); err != nil {
 			return nil, err
 		}
 	}
 
-	fileInfo, err = os.Stat("fastid.yml")
+	fileInfo, _ = os.Stat("fastid.yml")
 	if fileInfo != nil {
-		err = cleanenv.ReadConfig("fastid.yml", cfg)
-		if err != nil {
+		if err := cleanenv.ReadConfig("fastid.yml", cfg); err != nil {
 			return nil, err
 		}
 	}
 
-	fileInfo, err = os.Stat("../../configs/fastid.yml")
+	fileInfo, _ = os.Stat("../../configs/fastid.yml")
 	if fileInfo != nil {
-		err = cleanenv.ReadConfig("../../configs/fastid.yml", cfg)
-		if err != nil {
+		if err := cleanenv.ReadConfig("../../configs/fastid.yml", cfg); err != nil {
 			return nil, err
 		}
 	}
 
-	fileInfo, err = os.Stat(".env")
+	fileInfo, _ = os.Stat(".env")
 	if fileInfo != nil {
 		_ = cleanenv.ReadConfig(".env", cfg)
 	}
 
-	fileInfo, err = os.Stat("../../.env")
+	fileInfo, _ = os.Stat("../../.env")
 	if fileInfo != nil {
 		_ = cleanenv.ReadConfig("../../.env", cfg)
 	}
