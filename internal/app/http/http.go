@@ -7,6 +7,8 @@ import (
 	"github.com/fastid/fastid/internal/db"
 	"github.com/fastid/fastid/internal/logger"
 	"github.com/fastid/fastid/internal/migrations"
+	"github.com/fastid/fastid/internal/repositories"
+	"github.com/fastid/fastid/internal/services"
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -81,7 +83,13 @@ func HTTP() {
 		log.Infof("migration %s", err.Error())
 	}
 
-	fmt.Println(database)
+	// Repository
+	repos := repositories.New(cfg, log, database)
+
+	// Service
+	srv := services.New(cfg, log, repos)
+
+	fmt.Println(srv)
 
 	// Http server
 	go func() {
@@ -98,5 +106,4 @@ func HTTP() {
 	if err := e.Shutdown(ctxShutdown); err != nil {
 		e.Logger.Fatal(err)
 	}
-
 }
