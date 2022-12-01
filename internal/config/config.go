@@ -23,7 +23,7 @@ type (
 
 	DATABASE struct {
 		DriverName      string `env-default:"driver_name" yaml:"driver_name" env:"DATABASE_DRIVER_NAME"`
-		DBName          string `env-default:"qiwipayment" yaml:"dbname" env:"DATABASE_DBNAME"`
+		DBName          string `env-default:"fastid" yaml:"dbname" env:"DATABASE_DBNAME"`
 		User            string `env-default:"user" yaml:"user" env:"DATABASE_USER"`
 		Password        string `env-default:"password" yaml:"password" env:"DATABASE_PASSWORD"`
 		Host            string `env-default:"localhost" yaml:"host" env:"DATABASE_HOST"`
