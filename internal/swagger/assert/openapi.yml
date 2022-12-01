@@ -1,0 +1,48 @@
+openapi: "3.0.2"
+info:
+  title: FastID
+  version: 0.0.1
+  license:
+    name: MIT License
+    url: https://choosealicense.com/licenses/mit/
+
+paths:
+  /api/v1/merchants/:
+    get:
+      tags:
+        - Merchants
+      responses:
+        200:
+          description: "Возращает авторизационную cookie"
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/auth/:
+    post:
+      tags:
+        - Auth
+      summary: Авторизация и аунтификация
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              example:
+                username: "admin"
+                password: "password"
+
+      responses:
+        200:
+          description: "Возращает авторизационную cookie"
+          content:
+            application/json:
+              schema:
+                type: object
+

@@ -9,11 +9,12 @@ import (
 type Services interface{}
 
 type services struct {
-	cfg *config.Config
-	log *log.Logger
+	cfg          *config.Config
+	log          *log.Logger
+	repositories repositories.Repositories
 }
 
 func New(cfg *config.Config, log *log.Logger, repositories repositories.Repositories) Services {
-	srv := services{cfg: cfg, log: log}
+	srv := services{cfg: cfg, log: log, repositories: repositories}
 	return &srv
 }

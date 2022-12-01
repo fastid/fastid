@@ -2,13 +2,14 @@ package http
 
 import (
 	"context"
-	"fmt"
 	"github.com/fastid/fastid/internal/config"
 	"github.com/fastid/fastid/internal/db"
+	"github.com/fastid/fastid/internal/handlers"
 	"github.com/fastid/fastid/internal/logger"
 	"github.com/fastid/fastid/internal/migrations"
 	"github.com/fastid/fastid/internal/repositories"
 	"github.com/fastid/fastid/internal/services"
+	"github.com/fastid/fastid/internal/swagger"
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -36,6 +37,9 @@ func HTTP() {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
+
+	groupApi := e.Group("/api")
+	groupApiV1 := groupApi.Group("/v1")
 
 	// Prometheus
 	prom := prometheus.NewPrometheus("fastid", nil)
@@ -89,7 +93,13 @@ func HTTP() {
 	// Service
 	srv := services.New(cfg, log, repos)
 
-	fmt.Println(srv)
+	// Handlers
+	handler := handlers.New(cfg, log, srv)
+	handler.Register(groupApiV1)
+
+	// Swagger
+	sw := swagger.New(cfg, log)
+	sw.Register(groupApi)
 
 	// Http server
 	go func() {
