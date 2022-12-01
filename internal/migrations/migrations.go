@@ -33,6 +33,10 @@ func New(cfg *config.Config, db db.DB) (Migration, error) {
 	}
 
 	driver, err := postgres.WithInstance(sqlDb, &postgres.Config{})
+	if err != nil {
+		return nil, err
+	}
+
 	return &migration{cfg: cfg, driver: &driver}, nil
 }
 
