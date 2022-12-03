@@ -116,5 +116,4 @@ func (c *crypto) DecryptBase64(encryptedString string) (decryptedString string, 
 		return "", err
 	}
 	return decrypt, nil
-
 }
