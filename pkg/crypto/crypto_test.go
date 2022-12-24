@@ -23,3 +23,14 @@ func TestCryptEncryptDecrypt(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, deCryptString, "Hello word!")
 }
+
+func TestCryptEncryptDecryptError(t *testing.T) {
+	crypto := New(cipherKey)
+	cryptString, err := crypto.EncryptBase64("Hello word!")
+	require.NoError(t, err)
+	require.NotEmpty(t, cryptString)
+
+	crypto = New("b5226304d593078fb00c8e63f1649420ee0f12d2308c2fca42f0a73ec7e35c89")
+	_, err = crypto.DecryptBase64(cryptString)
+	require.Equal(t, err.Error(), "cipher: message authentication failed")
+}

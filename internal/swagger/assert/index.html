@@ -22,6 +22,23 @@
             displayRequestDuration: true,
             requestSnippetsEnabled: true,
             onComplete: function() {},
+            requestSnippets: {
+                generators: {
+                    curl_bash: {
+                        title: "cURL (bash)",
+                        syntax: "bash"
+                    },
+                    curl_powershell: {
+                        title: "cURL (PowerShell)",
+                        syntax: "powershell"
+                    },
+                    curl_cmd: {
+                        title: "cURL (CMD)",
+                        syntax: "bash"
+                    },
+                },
+                defaultExpanded: true,
+            }
         });
     </script>
 </html>

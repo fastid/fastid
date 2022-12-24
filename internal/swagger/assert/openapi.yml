@@ -7,6 +7,71 @@ info:
     url: https://choosealicense.com/licenses/mit/
 
 paths:
+  /api/v1/server/:
+    get:
+      tags:
+        - Server
+      summary: Server settings and status
+      responses:
+        200:
+          description: Return server settings and status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ok, need_setup, locked]
+                    description: >
+                      Description of statuses:
+                       * `ok` - The server is working fine
+                       * `need_setup` - Initial server setup is required
+                       * `locked` - The server is blocked and requires a key to decrypt the data
+                  password_min_length:
+                    type: number
+                    description: Minimum password length
+                  password_max_length:
+                    type: number
+                    description: Maximum password length
+    post:
+      tags:
+        - Server
+      summary: Initial server setup
+      description: Creates a super user with admin accesses. And also returns the key to decrypt the database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              example:
+                email: "user_admin@exmaple.com"
+                password: "password"
+      responses:
+        201:
+          description: Return server settings and status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    description: Email address
+                  username:
+                    type: string
+                    description: Username
+                  key:
+                    type: string
+                    description: The key for decrypting the database
+
+
   /api/v1/keys/:
     get:
       tags:
@@ -29,12 +94,6 @@ paths:
           application/json:
             schema:
               type: object
-              example:
-                count: 1
-              properties:
-                count:
-                  description: Number of keys to decrypt
-                  type: integer
       responses:
         200:
           description: Returns the number of keys
@@ -81,4 +140,6 @@ paths:
             application/json:
               schema:
                 type: object
+
+#components:
 

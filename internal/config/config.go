@@ -2,15 +2,18 @@ package config
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
+	"net/url"
 	"os"
 )
 
 type (
 	Config struct {
-		Debug    bool `yaml:"debug" env:"DEBUG"`
-		HTTP     `yaml:"http"`
-		DATABASE `yaml:"database"`
-		LOGGER   `yaml:"logger"`
+		Debug      bool `yaml:"debug" env:"DEBUG"`
+		HTTP       `yaml:"http"`
+		DATABASE   `yaml:"database"`
+		LOGGER     `yaml:"logger"`
+		VALIDATORS `yaml:"validators"`
+		ADMIN      `yaml:"admin"`
 	}
 
 	LOGGER struct {
@@ -36,6 +39,17 @@ type (
 		MaxIdleConns    int    `env-default:"5" yaml:"max_idle_conns" env:"DATABASE_MAX_IDLE_CONNS"`
 		ConnMaxLifetime int    `env-default:"1800" yaml:"conn_max_lifetime" env:"DATABASE_MAX_LIFETIME"`
 		ConnMaxIdleTime int    `env-default:"1800" yaml:"conn_max_idletime" env:"DATABASE_MAX_IDLETIME"`
+	}
+
+	VALIDATORS struct {
+		PasswordMinLength    int     `env-default:"6" yaml:"password_min_length" env:"VALIDATOR_PASSWORD_MIN_LENGTH"`
+		PasswordMaxLength    int     `env-default:"30" yaml:"password_max_length" env:"VALIDATOR_PASSWORD_MAX_LENGTH"`
+		PasswordValidatorURL url.URL `env-default:"/v1/api/validators/password/" yaml:"password_validator_url" env:"VALIDATOR_PASSWORD_VALIDATOR_URL"`
+		EmailValidatorURL    url.URL `env-default:"/v1/api/validators/email/" yaml:"email_validator_url" env:"VALIDATOR_EMAIL_VALIDATOR_URL"`
+	}
+
+	ADMIN struct {
+		LOGIN string `env-default:"admin" yaml:"admin_login" env:"ADMIN_LOGIN"`
 	}
 )
 

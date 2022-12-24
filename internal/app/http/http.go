@@ -10,6 +10,7 @@ import (
 	"github.com/fastid/fastid/internal/repositories"
 	"github.com/fastid/fastid/internal/services"
 	"github.com/fastid/fastid/internal/swagger"
+	"github.com/fastid/fastid/internal/validators"
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -50,11 +51,13 @@ func HTTP() {
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogURI:       true,
 		LogStatus:    true,
+		LogRemoteIP:  true,
 		LogRequestID: true,
 		LogValuesFunc: func(c echo.Context, values middleware.RequestLoggerValues) error {
 			log.WithFields(logrus.Fields{
 				"uri":          values.URI,
 				"status":       values.Status,
+				"ip":           values.RemoteIP,
 				"x-request-id": values.RequestID,
 			}).Info("request")
 
@@ -92,6 +95,10 @@ func HTTP() {
 
 	// Service
 	srv := services.New(cfg, log, repos)
+
+	// Validator
+	validator := validators.New()
+	validator.Register(e)
 
 	// Handlers
 	handler := handlers.New(cfg, log, srv)

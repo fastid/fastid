@@ -6,18 +6,30 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type Repositories interface{}
+type Repositories interface {
+	Keys() Keys
+}
 
 type repositories struct {
-	cfg *config.Config
-	log *log.Logger
-	db  db.DB
+	cfg  *config.Config
+	log  *log.Logger
+	db   db.DB
+	keys Keys
 }
 
 func New(cfg *config.Config, log *log.Logger, db db.DB) Repositories {
-	return &repositories{
+	keys := NewKeysRepository(cfg, log, db)
+
+	repo := &repositories{
 		cfg: cfg,
 		log: log,
 		db:  db,
 	}
+
+	repo.keys = keys
+	return repo
+}
+
+func (r *repositories) Keys() Keys {
+	return r.keys
 }
