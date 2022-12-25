@@ -34,6 +34,12 @@ paths:
                   password_max_length:
                     type: number
                     description: Maximum password length
+                  password_validator_url:
+                    type: string
+                    description: Validation link
+                  email_validator_url:
+                    type: string
+                    description: Validation link
     post:
       tags:
         - Server
@@ -50,6 +56,7 @@ paths:
                   type: string
                 password:
                   type: string
+                  format: password
               example:
                 email: "user_admin@exmaple.com"
                 password: "password"

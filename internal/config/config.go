@@ -21,7 +21,8 @@ type (
 	}
 
 	HTTP struct {
-		Listen string `env-required:"true" yaml:"listen" env:"HTTP_LISTEN"`
+		Listen string   `env-required:"true" yaml:"listen" env:"HTTP_LISTEN"`
+		CORS   []string `yaml:"cors" env:"HTTP_CORS"`
 	}
 
 	DATABASE struct {
