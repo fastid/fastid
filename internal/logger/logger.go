@@ -11,6 +11,7 @@ func New(cfg *config.Config) *log.Logger {
 	var logger = log.New()
 	logger.SetFormatter(&log.JSONFormatter{})
 	logger.SetOutput(os.Stdout)
+	logger.SetReportCaller(false)
 
 	if strings.ToLower(cfg.LOGGER.Level) == "debug" {
 		logger.SetLevel(log.DebugLevel)

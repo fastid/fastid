@@ -91,6 +91,10 @@ func (h *serverHandler) post() echo.HandlerFunc {
 					errMessage = "The email address is incorrect"
 				}
 
+				if err.Field() == "Password" && err.Tag() == "required" {
+					errMessage = `The "Password" field is not filled`
+				}
+
 				errs = append(errs, Errors{
 					errMessage,
 					err.Field(),
@@ -100,6 +104,11 @@ func (h *serverHandler) post() echo.HandlerFunc {
 			}
 			return echo.NewHTTPError(http.StatusBadRequest, &Error{Message: "", Errors: errs})
 		}
+
+		h.log.WithFields(log.Fields{
+			"email": u.Email,
+			"login": h.cfg.ADMIN.LOGIN,
+		}).Infoln("Create super user")
 
 		return e.JSON(http.StatusOK, make(map[string]string))
 	}
