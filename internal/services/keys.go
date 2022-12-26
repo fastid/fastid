@@ -11,16 +11,17 @@ import (
 type Keys interface {
 	GenerateKey() (cipher string, err error)
 	Key(ctx context.Context) (err error)
+	//SetLogger(logger *log.Entry)
 }
 
 type keys struct {
+	logger       *log.Logger
 	cfg          *config.Config
-	log          *log.Logger
 	repositories repositories.Repositories
 }
 
-func NewKeyService(cfg *config.Config, log *log.Logger, repositories repositories.Repositories) Keys {
-	return &keys{cfg: cfg, log: log, repositories: repositories}
+func NewKeyService(cfg *config.Config, logger *log.Logger, repositories repositories.Repositories) Keys {
+	return &keys{cfg: cfg, logger: logger, repositories: repositories}
 }
 
 // GenerateKey - Generates a key for encryption
@@ -29,6 +30,7 @@ func (k *keys) GenerateKey() (cipher string, err error) {
 	if err != nil {
 		return "", err
 	}
+	k.logger.Infof("Generate key %s", cipher)
 	return cipher, nil
 }
 

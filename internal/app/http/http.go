@@ -11,6 +11,7 @@ import (
 	"github.com/fastid/fastid/internal/services"
 	"github.com/fastid/fastid/internal/swagger"
 	"github.com/fastid/fastid/internal/validators"
+	"github.com/google/uuid"
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -47,20 +48,31 @@ func HTTP() {
 	prom.Use(e)
 
 	// Middleware
-	e.Use(middleware.RequestID())
+	e.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
+		RequestIDHandler: func(e echo.Context, requestID string) {
+			e.Set("RequestID", requestID)
+		},
+		Generator: func() string {
+			return uuid.New().String()
+		},
+	}))
+
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogURI:       true,
 		LogStatus:    true,
 		LogRemoteIP:  true,
 		LogRequestID: true,
+		LogMethod:    true,
 		LogValuesFunc: func(c echo.Context, values middleware.RequestLoggerValues) error {
-			log.WithFields(logrus.Fields{
+			log := log.WithFields(logrus.Fields{
+				"method":       values.Method,
 				"uri":          values.URI,
 				"status":       values.Status,
 				"ip":           values.RemoteIP,
 				"x-request-id": values.RequestID,
-			}).Info("request")
+			})
 
+			log.Infof("%s %s", values.Method, values.URI)
 			return nil
 		}},
 	))

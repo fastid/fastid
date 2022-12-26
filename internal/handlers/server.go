@@ -105,10 +105,16 @@ func (h *serverHandler) post() echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, &Error{Message: "", Errors: errs})
 		}
 
-		h.log.WithFields(log.Fields{
-			"email": u.Email,
-			"login": h.cfg.ADMIN.LOGIN,
-		}).Infoln("Create super user")
+		logger := h.log.WithFields(log.Fields{
+			"x-request-id": e.Get("RequestID"),
+			"email":        u.Email,
+			"login":        h.cfg.ADMIN.LOGIN,
+		})
+		logger.Infoln("Create super user")
+
+		//h.srv.Keys().SetLogger(logger)
+
+		h.srv.Keys().GenerateKey()
 
 		return e.JSON(http.StatusOK, make(map[string]string))
 	}
