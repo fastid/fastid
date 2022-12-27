@@ -56,8 +56,15 @@ func (k *keys) CreateKey(ctx context.Context) (keysSchema KeysSchema, err error)
 	}
 	defer connect.Release()
 
-	cipher, _ := crypto.GenerateCipher()
-	cipherPrivate, _ := crypto.GenerateCipher()
+	cipher, err := crypto.GenerateCipher()
+	if err != nil {
+		return keysSchema, err
+	}
+
+	cipherPrivate, err := crypto.GenerateCipher()
+	if err != nil {
+		return keysSchema, err
+	}
 
 	cr := crypto.New(cipher)
 	encrypt, err := cr.Encrypt(cipherPrivate)

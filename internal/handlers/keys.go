@@ -29,9 +29,9 @@ func (h *keyHandler) Register(router *echo.Group) {
 
 func (h *keyHandler) post() echo.HandlerFunc {
 
-	type Request struct {
-		Count int `json:"count" validate:"required,min=1,max=10"`
-	}
+	//type Request struct {
+	//	Count int `json:"count" validate:"required,min=1,max=10"`
+	//}
 
 	return func(e echo.Context) error {
 		//u := new(Request)
