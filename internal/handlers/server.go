@@ -87,7 +87,7 @@ func (h *serverHandler) post() echo.HandlerFunc {
 		u.Password = strings.TrimLeft(u.Password, " ")
 		u.Password = strings.TrimRight(u.Password, " ")
 
-		logger := h.log.WithField("x-request-id", e.Get("RequestID"))
+		logger := h.log.WithField("x-request-id", e.Request().Context().Value("requestID").(string))
 
 		if err := e.Validate(u); err != nil {
 			var errs []Errors
@@ -121,8 +121,7 @@ func (h *serverHandler) post() echo.HandlerFunc {
 		email := u.Email
 		password := u.Password
 
-		key, err := h.srv.Keys().RequestID(e.Get("RequestID")).GenerateKey()
-		defer h.srv.Keys().ResetRequestID()
+		key, err := h.srv.Keys().GenerateKey(e.Request().Context())
 		if err != nil {
 			return err
 		}

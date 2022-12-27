@@ -50,7 +50,9 @@ func HTTP() {
 	// Middleware
 	e.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 		RequestIDHandler: func(e echo.Context, requestID string) {
-			e.Set("RequestID", requestID)
+			ctx := context.WithValue(e.Request().Context(), "requestID", requestID)
+			req := e.Request().WithContext(ctx)
+			e.SetRequest(req)
 		},
 		Generator: func() string {
 			return uuid.New().String()

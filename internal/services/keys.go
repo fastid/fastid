@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"github.com/fastid/fastid/internal/config"
 	"github.com/fastid/fastid/internal/repositories"
 	"github.com/fastid/fastid/pkg/crypto"
@@ -11,9 +10,7 @@ import (
 )
 
 type Keys interface {
-	RequestID(requestID interface{}) Keys
-	ResetRequestID() Keys
-	GenerateKey() (cipher string, err error)
+	GenerateKey(ctx context.Context) (cipher string, err error)
 	Key(ctx context.Context) (err error)
 
 	//SetLogger(logger *log.Entry)
@@ -30,28 +27,20 @@ func NewKeyService(cfg *config.Config, logger *log.Logger, repositories reposito
 	return &keys{cfg: cfg, log: logger, repositories: repositories}
 }
 
-func (k *keys) RequestID(requestID interface{}) Keys {
-	if requestID != nil {
-		k.requestID = fmt.Sprintf("%s", requestID)
-	}
-	return k
-}
-
-func (k *keys) ResetRequestID() Keys {
-	k.requestID = nil
-	return k
-}
-
 // GenerateKey - Generates a key for encryption
-func (k *keys) GenerateKey() (cipher string, err error) {
+func (k *keys) GenerateKey(ctx context.Context) (cipher string, err error) {
 
 	cipher, err = crypto.GenerateCipher()
 	if err != nil {
 		return "", err
 	}
 
-	logger := k.log.WithField("x-request-id", k.requestID)
-	logger.Infof("Generate key %s", masker.Address(cipher))
+	if ctx.Value("requestID") != nil {
+		logger := k.log.WithField("x-request-id", ctx.Value("requestID").(string))
+		logger.Infof("Generate key %s", masker.Address(cipher))
+	} else {
+		k.log.Infof("Generate key %s", masker.Address(cipher))
+	}
 
 	return cipher, nil
 }
