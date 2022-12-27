@@ -58,7 +58,10 @@ func (k *keys) GenerateKey() (cipher string, err error) {
 
 // Key - Generates a key for encryption
 func (k *keys) Key(ctx context.Context) (err error) {
-	k.repositories.Keys().CreateKey(ctx)
+	_, err = k.repositories.Keys().CreateKey(ctx)
+	if err != nil {
+		return err
+	}
 
 	//key, err := k.repositories.Keys().GetKey(ctx)
 	//if err == sql.ErrNoRows {
