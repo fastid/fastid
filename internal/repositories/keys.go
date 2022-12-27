@@ -52,18 +52,18 @@ func (k *keys) GetKey(ctx context.Context) (keysSchema KeysSchema, err error) {
 func (k *keys) CreateKey(ctx context.Context) (keysSchema KeysSchema, err error) {
 	connect, err := k.db.GetConnect().Acquire(ctx)
 	if err != nil {
-		return keysSchema, err
+		return KeysSchema{}, err
 	}
 	defer connect.Release()
 
 	cipher, err := crypto.GenerateCipher()
 	if err != nil {
-		return keysSchema, err
+		return KeysSchema{}, err
 	}
 
 	cipherPrivate, err := crypto.GenerateCipher()
 	if err != nil {
-		return keysSchema, err
+		return KeysSchema{}, err
 	}
 
 	cr := crypto.New(cipher)
