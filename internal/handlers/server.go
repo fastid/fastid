@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/fastid/fastid/internal/config"
 	"github.com/fastid/fastid/internal/services"
+	"github.com/ggwhite/go-masker"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
@@ -66,6 +67,12 @@ func (h *serverHandler) post() echo.HandlerFunc {
 		Password string `json:"password" validate:"required"`
 	}
 
+	type Response struct {
+		Key      string `json:"key"`
+		Username string `json:"username"`
+		Email    string `json:"email"`
+	}
+
 	return func(e echo.Context) error {
 		u := new(Request)
 
@@ -78,11 +85,14 @@ func (h *serverHandler) post() echo.HandlerFunc {
 		u.Password = strings.TrimLeft(u.Password, " ")
 		u.Password = strings.TrimRight(u.Password, " ")
 
+		logger := h.log.WithField("x-request-id", e.Get("RequestID"))
+
 		if err := e.Validate(u); err != nil {
 			var errs []Errors
 			var errMessage string
 
 			for _, err := range err.(validator.ValidationErrors) {
+
 				if err.Field() == "Email" && err.Tag() == "required" {
 					errMessage = `The "Email" field is not filled`
 				}
@@ -105,17 +115,18 @@ func (h *serverHandler) post() echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, &Error{Message: "", Errors: errs})
 		}
 
-		logger := h.log.WithFields(log.Fields{
-			"x-request-id": e.Get("RequestID"),
-			"email":        u.Email,
-			"login":        h.cfg.ADMIN.LOGIN,
-		})
-		logger.Infoln("Create super user")
+		username := h.cfg.ADMIN.USERNAME
+		email := u.Email
+		password := u.Password
 
-		//h.srv.Keys().SetLogger(logger)
+		key, err := h.srv.Keys().RequestID(e.Get("RequestID")).GenerateKey()
+		defer h.srv.Keys().ResetRequestID()
+		if err != nil {
+			return err
+		}
 
-		h.srv.Keys().GenerateKey()
+		logger.Infof("Create super user (username:%s email:%s, password:%s)", username, email, masker.Password(password))
 
-		return e.JSON(http.StatusOK, make(map[string]string))
+		return e.JSON(http.StatusCreated, &Response{Key: key, Username: username, Email: email})
 	}
 }

@@ -50,7 +50,7 @@ type (
 	}
 
 	ADMIN struct {
-		LOGIN string `env-default:"admin" yaml:"admin_login" env:"ADMIN_LOGIN"`
+		USERNAME string `env-default:"admin" yaml:"admin_username" env:"ADMIN_USERNAME"`
 	}
 )
 
