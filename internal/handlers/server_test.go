@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/fastid/fastid/internal/config"
 	"github.com/fastid/fastid/internal/db"
 	"github.com/fastid/fastid/internal/logger"
@@ -92,6 +93,67 @@ func TestServer(t *testing.T) {
 			require.Equal(t, result["email"], "user_admin@exmaple.com")
 			require.Equal(t, result["username"], cfg.ADMIN.USERNAME)
 		}
+	})
+
+	t.Run("PATCH", func(t *testing.T) {
+		bodyJSON := `{"key": "f09f3a530cb589dc833d0763689defc7b78594651f9fb7b03a07f40a180cda75"}`
+
+		req := httptest.NewRequest(http.MethodPatch, "/api/v1/server/", strings.NewReader(bodyJSON))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		serverPost := handler.Server().patch()
+
+		if assert.NoError(t, serverPost(c)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+
+			var result map[string]any
+
+			err := json.Unmarshal(rec.Body.Bytes(), &result)
+			require.NoError(t, err)
+			fmt.Println(result)
+
+		}
+	})
+
+	t.Run("POST-Errors", func(t *testing.T) {
+		bodyJSON := `{}`
+
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/server/", strings.NewReader(bodyJSON))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		serverPost := handler.Server().post()
+		err := serverPost(c)
+		require.Error(t, err)
+	})
+
+	t.Run("POST-Error-Email", func(t *testing.T) {
+		bodyJSON := `{"email": "userbox"}`
+
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/server/", strings.NewReader(bodyJSON))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		serverPost := handler.Server().post()
+		err := serverPost(c)
+		require.Error(t, err)
+	})
+
+	t.Run("POST-Error-Email-Invalid", func(t *testing.T) {
+		bodyJSON := `{"email": "fake-email"}`
+
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/server/", strings.NewReader(bodyJSON))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		serverPost := handler.Server().post()
+		err := serverPost(c)
+		require.Error(t, err)
 	})
 
 }

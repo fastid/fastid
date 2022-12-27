@@ -10,7 +10,7 @@ import (
 
 type HealthCheckHandler interface {
 	Register(router *echo.Group)
-	Get() echo.HandlerFunc
+	get() echo.HandlerFunc
 }
 
 type healthCheckHandler struct {
@@ -24,10 +24,10 @@ func NewHealthCheckHandler(cfg *config.Config, log *log.Logger, srv services.Ser
 }
 
 func (h *healthCheckHandler) Register(router *echo.Group) {
-	router.Add("GET", "/healthcheck/", h.Get())
+	router.Add("GET", "/healthcheck/", h.get())
 }
 
-func (h *healthCheckHandler) Get() echo.HandlerFunc {
+func (h *healthCheckHandler) get() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		return e.JSON(http.StatusOK, make(map[string]string))
 	}

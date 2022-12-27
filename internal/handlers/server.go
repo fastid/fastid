@@ -15,6 +15,7 @@ type ServerHandler interface {
 	Register(router *echo.Group)
 	get() echo.HandlerFunc
 	post() echo.HandlerFunc
+	patch() echo.HandlerFunc
 }
 
 type serverHandler struct {
@@ -30,14 +31,15 @@ func NewServerHandler(cfg *config.Config, log *log.Logger, srv services.Services
 func (h *serverHandler) Register(router *echo.Group) {
 	router.Add("GET", "/server/", h.get())
 	router.Add("POST", "/server/", h.post())
+	router.Add("PATCH", "/server/", h.patch())
 }
 
 func (h *serverHandler) get() echo.HandlerFunc {
+	//Ok        string = "ok"
+	//Locked    string = "locked"
 
 	const (
-		Ok        string = "ok"
 		NeedSetup string = "need_setup"
-		Locked    string = "locked"
 	)
 
 	type Response struct {
@@ -129,4 +131,29 @@ func (h *serverHandler) post() echo.HandlerFunc {
 
 		return e.JSON(http.StatusCreated, &Response{Key: key, Username: username, Email: email})
 	}
+}
+
+func (h *serverHandler) patch() echo.HandlerFunc {
+	type Response struct {
+	}
+
+	type Request struct {
+		Key string `json:"key" validate:"required"`
+	}
+
+	return func(e echo.Context) error {
+		u := new(Request)
+		if err := e.Bind(u); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+
+		u.Key = strings.TrimLeft(u.Key, " ")
+		u.Key = strings.TrimRight(u.Key, " ")
+
+		logger := h.log.WithField("x-request-id", e.Get("RequestID"))
+
+		logger.Infof("Unlock database (key:%s)", masker.Address(u.Key))
+		return e.JSON(http.StatusOK, &Response{})
+	}
+
 }

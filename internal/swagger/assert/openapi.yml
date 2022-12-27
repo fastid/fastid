@@ -77,7 +77,27 @@ paths:
                   key:
                     type: string
                     description: The key for decrypting the database
-
+    patch:
+      tags:
+        - Server
+      summary: Unlock database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                  description: The key for decrypting the database
+      responses:
+        201:
+          description: Return server settings and status
+          content:
+            application/json:
+              schema:
+                type: object
 
   /api/v1/keys/:
     get:
