@@ -8,12 +8,13 @@ import (
 
 type (
 	Config struct {
-		Debug      bool `yaml:"debug" env:"DEBUG"`
-		HTTP       `yaml:"http"`
-		DATABASE   `yaml:"database"`
-		LOGGER     `yaml:"logger"`
-		VALIDATORS `yaml:"validators"`
-		ADMIN      `yaml:"admin"`
+		Debug           bool   `yaml:"debug" env:"DEBUG"`
+		ApplicationName string `yaml:"application_name" env-default:"FastID" env:"APPLICATION_NAME"`
+		HTTP            `yaml:"http"`
+		DATABASE        `yaml:"database"`
+		LOGGER          `yaml:"logger"`
+		VALIDATORS      `yaml:"validators"`
+		ADMIN           `yaml:"admin"`
 	}
 
 	LOGGER struct {

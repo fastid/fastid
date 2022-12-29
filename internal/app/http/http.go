@@ -68,7 +68,7 @@ func HTTP() {
 
 	// Set Header server
 	e.Use(ServerHeaderWithConfig(ServerHeaderConfig{
-		Header: "FastID",
+		Header: cfg.ApplicationName,
 	}))
 
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
@@ -99,7 +99,6 @@ func HTTP() {
 			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 		}))
 	}
-	// Detect lang
 
 	// DB
 	database, err := db.New(cfg, ctx)

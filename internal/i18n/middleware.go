@@ -20,10 +20,11 @@ func DetectLanguageWithConfig() echo.MiddlewareFunc {
 			accept := e.Request().Header.Get("Accept-Language")
 			tag, _ := language.MatchStrings(matcher, accept)
 
-			lang := "en"
-			if tag.String() == "ru-RU" {
+			var lang string
+			switch val := tag; val.String() {
+			case "ru-RU":
 				lang = "ru"
-			} else {
+			default:
 				lang = "en"
 			}
 
