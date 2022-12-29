@@ -4,8 +4,8 @@ import (
 	"github.com/fastid/fastid/internal/config"
 	"github.com/fastid/fastid/internal/logger"
 	"github.com/fastid/fastid/internal/services"
+	"github.com/fastid/fastid/internal/validators"
 	"github.com/ggwhite/go-masker"
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
@@ -88,31 +88,7 @@ func (h *serverHandler) post() echo.HandlerFunc {
 		u.Password = strings.TrimRight(u.Password, " ")
 
 		if err := e.Validate(u); err != nil {
-			var errs []Errors
-			var errMessage string
-
-			for _, err := range err.(validator.ValidationErrors) {
-
-				if err.Field() == "Email" && err.Tag() == "required" {
-					errMessage = `The "Email" field is not filled`
-				}
-
-				if err.Field() == "Email" && err.Tag() == "email" {
-					errMessage = "The email address is incorrect"
-				}
-
-				if err.Field() == "Password" && err.Tag() == "required" {
-					errMessage = `The "Password" field is not filled`
-				}
-
-				errs = append(errs, Errors{
-					errMessage,
-					err.Field(),
-					err.Tag(),
-					err.ActualTag(),
-				})
-			}
-			return echo.NewHTTPError(http.StatusBadRequest, &Error{Message: "", Errors: errs})
+			return echo.NewHTTPError(http.StatusBadRequest, validators.Parse(e.Request().Context(), err))
 		}
 
 		username := h.cfg.ADMIN.USERNAME

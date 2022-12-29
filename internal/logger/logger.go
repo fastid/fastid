@@ -105,7 +105,7 @@ func (l *logger) Warnf(ctx context.Context, msg string, args ...interface{}) {
 }
 
 func (l *logger) Tracef(ctx context.Context, msg string, args ...interface{}) {
-	l.withField(ctx).Warnf(msg, args...)
+	l.withField(ctx).Tracef(msg, args...)
 }
 
 func (l *logger) Fatalf(ctx context.Context, msg string, args ...interface{}) {
