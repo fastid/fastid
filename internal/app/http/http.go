@@ -77,14 +77,17 @@ func HTTP() {
 		LogRemoteIP:  true,
 		LogRequestID: true,
 		LogMethod:    true,
+		LogLatency:   true,
 		LogValuesFunc: func(c echo.Context, values middleware.RequestLoggerValues) error {
 			log := log.GetLogger().WithFields(logrus.Fields{
-				"method":       values.Method,
-				"uri":          values.URI,
-				"status":       values.Status,
-				"ip":           values.RemoteIP,
-				"x-request-id": values.RequestID,
-				"language":     c.Request().Context().Value(i18n.KeyContext("language")),
+				"method":          values.Method,
+				"uri":             values.URI,
+				"status":          values.Status,
+				"ip":              values.RemoteIP,
+				"x-request-id":    values.RequestID,
+				"language":        c.Request().Context().Value(i18n.KeyContext("language")),
+				"latency":         values.Latency.String(),
+				"latency_seconds": values.Latency.Seconds(),
 			})
 
 			log.Infof("%s %s", values.Method, values.URI)
