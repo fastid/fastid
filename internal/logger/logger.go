@@ -53,8 +53,8 @@ func New(cfg *config.Config) Logger {
 }
 
 func (l *logger) withField(ctx context.Context) *logrus.Entry {
-	if ctx.Value("requestID") != nil {
-		return l.logger.WithField("x-request-id", ctx.Value("requestID").(RequestID))
+	if ctx.Value(RequestID("requestID")) != nil {
+		return l.logger.WithField("x-request-id", ctx.Value("requestID").(string))
 	} else {
 		return l.logger.WithField("x-request-id", nil)
 	}

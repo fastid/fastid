@@ -53,7 +53,7 @@ func HTTP() {
 	// Middleware
 	e.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 		RequestIDHandler: func(e echo.Context, requestID string) {
-			ctx := context.WithValue(e.Request().Context(), "requestID", logger.RequestID(requestID))
+			ctx := context.WithValue(e.Request().Context(), logger.RequestID("requestID"), requestID)
 			req := e.Request().WithContext(ctx)
 			e.SetRequest(req)
 		},
