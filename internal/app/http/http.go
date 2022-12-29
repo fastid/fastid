@@ -78,6 +78,7 @@ func HTTP() {
 		LogRequestID: true,
 		LogMethod:    true,
 		LogLatency:   true,
+		LogUserAgent: true,
 		LogValuesFunc: func(c echo.Context, values middleware.RequestLoggerValues) error {
 			log := log.GetLogger().WithFields(logrus.Fields{
 				"method":          values.Method,
@@ -88,6 +89,7 @@ func HTTP() {
 				"language":        c.Request().Context().Value(i18n.KeyContext("language")),
 				"latency":         values.Latency.String(),
 				"latency_seconds": values.Latency.Seconds(),
+				"user_agent":      values.UserAgent,
 			})
 
 			log.Infof("%s %s", values.Method, values.URI)
