@@ -65,6 +65,10 @@ func Parse(ctx context.Context, err error) *Error {
 			errMessage = trans.Trans(ctx, `The "Password" field is not filled`)
 		}
 
+		if err.Field() == "Key" && err.Tag() == "required" {
+			errMessage = trans.Trans(ctx, `The "Key" field is not filled`)
+		}
+
 		errs = append(errs, Errors{
 			errMessage,
 			strings.ToLower(err.Field()),

@@ -24,6 +24,8 @@ func (t *translate) Trans(ctx context.Context, message string) string {
 		return "Адрес электронной почты указан неверно"
 	} else if message == `The "Password" field is not filled` && lang == "ru" {
 		return `Поле "Пароль" не заполнено`
+	} else if message == `The "Key" field is not filled` && lang == "ru" {
+		return `Поле "Ключ" не заполнено`
 	}
 
 	return message

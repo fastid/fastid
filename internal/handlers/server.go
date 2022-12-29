@@ -123,6 +123,10 @@ func (h *serverHandler) patch() echo.HandlerFunc {
 		u.Key = strings.TrimLeft(u.Key, " ")
 		u.Key = strings.TrimRight(u.Key, " ")
 
+		if err := e.Validate(u); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, validators.Parse(e.Request().Context(), err))
+		}
+
 		h.logger.Infof(e.Request().Context(), "Unlock database (key:%s)", masker.Address(u.Key))
 		return e.JSON(http.StatusOK, &Response{})
 	}

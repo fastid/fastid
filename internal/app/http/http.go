@@ -81,15 +81,14 @@ func HTTP() {
 		LogUserAgent: true,
 		LogValuesFunc: func(c echo.Context, values middleware.RequestLoggerValues) error {
 			log := log.GetLogger().WithFields(logrus.Fields{
-				"method":          values.Method,
-				"uri":             values.URI,
-				"status":          values.Status,
-				"ip":              values.RemoteIP,
-				"x-request-id":    values.RequestID,
-				"language":        c.Request().Context().Value(i18n.KeyContext("language")),
-				"latency":         values.Latency.String(),
-				"latency_seconds": values.Latency.Seconds(),
-				"user_agent":      values.UserAgent,
+				"method":       values.Method,
+				"uri":          values.URI,
+				"status":       values.Status,
+				"ip":           values.RemoteIP,
+				"x-request-id": values.RequestID,
+				"language":     c.Request().Context().Value(i18n.KeyContext("language")),
+				"latency":      values.Latency.String(),
+				"user_agent":   values.UserAgent,
 			})
 
 			log.Infof("%s %s", values.Method, values.URI)
