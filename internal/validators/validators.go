@@ -2,6 +2,7 @@ package validators
 
 import (
 	"context"
+	"github.com/fastid/fastid/internal/i18n"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"strings"
@@ -48,18 +49,20 @@ func Parse(ctx context.Context, err error) *Error {
 	var errs []Errors
 	var errMessage string
 
+	trans := i18n.New()
+
 	for _, err := range err.(validator.ValidationErrors) {
 
 		if err.Field() == "Email" && err.Tag() == "required" {
-			errMessage = `The "Email" field is not filled`
+			errMessage = trans.Trans(ctx, `The "Email" field is not filled`)
 		}
 
 		if err.Field() == "Email" && err.Tag() == "email" {
-			errMessage = "The email address is incorrect"
+			errMessage = trans.Trans(ctx, "The email address is incorrect")
 		}
 
 		if err.Field() == "Password" && err.Tag() == "required" {
-			errMessage = `The "Password" field is not filled`
+			errMessage = trans.Trans(ctx, `The "Password" field is not filled`)
 		}
 
 		errs = append(errs, Errors{
