@@ -5,6 +5,7 @@ import (
 	"github.com/fastid/fastid/internal/config"
 	"github.com/fastid/fastid/internal/db"
 	"github.com/fastid/fastid/internal/handlers"
+	"github.com/fastid/fastid/internal/i18n"
 	"github.com/fastid/fastid/internal/logger"
 	"github.com/fastid/fastid/internal/migrations"
 	"github.com/fastid/fastid/internal/repositories"
@@ -50,6 +51,9 @@ func HTTP() {
 	prom := prometheus.NewPrometheus("fastid", nil)
 	prom.Use(e)
 
+	// DetectLanguage
+	e.Use(i18n.DetectLanguageWithConfig())
+
 	// Middleware
 	e.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 		RequestIDHandler: func(e echo.Context, requestID string) {
@@ -60,6 +64,11 @@ func HTTP() {
 		Generator: func() string {
 			return uuid.New().String()
 		},
+	}))
+
+	// Set Header server
+	e.Use(ServerHeaderWithConfig(ServerHeaderConfig{
+		Header: "FastID",
 	}))
 
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
@@ -75,6 +84,7 @@ func HTTP() {
 				"status":       values.Status,
 				"ip":           values.RemoteIP,
 				"x-request-id": values.RequestID,
+				"language":     c.Request().Context().Value(i18n.KeyContext("language")),
 			})
 
 			log.Infof("%s %s", values.Method, values.URI)
@@ -89,6 +99,7 @@ func HTTP() {
 			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 		}))
 	}
+	// Detect lang
 
 	// DB
 	database, err := db.New(cfg, ctx)
