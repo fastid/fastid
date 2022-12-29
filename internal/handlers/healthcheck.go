@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"github.com/fastid/fastid/internal/config"
+	"github.com/fastid/fastid/internal/logger"
 	"github.com/fastid/fastid/internal/services"
 	"github.com/labstack/echo/v4"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -14,13 +14,13 @@ type HealthCheckHandler interface {
 }
 
 type healthCheckHandler struct {
-	cfg *config.Config
-	log *log.Logger
-	srv services.Services
+	cfg    *config.Config
+	logger logger.Logger
+	srv    services.Services
 }
 
-func NewHealthCheckHandler(cfg *config.Config, log *log.Logger, srv services.Services) HealthCheckHandler {
-	return &healthCheckHandler{cfg: cfg, log: log, srv: srv}
+func NewHealthCheckHandler(cfg *config.Config, logger logger.Logger, srv services.Services) HealthCheckHandler {
+	return &healthCheckHandler{cfg: cfg, logger: logger, srv: srv}
 }
 
 func (h *healthCheckHandler) Register(router *echo.Group) {

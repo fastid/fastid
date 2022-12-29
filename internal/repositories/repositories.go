@@ -3,7 +3,7 @@ package repositories
 import (
 	"github.com/fastid/fastid/internal/config"
 	"github.com/fastid/fastid/internal/db"
-	log "github.com/sirupsen/logrus"
+	"github.com/fastid/fastid/internal/logger"
 )
 
 type Repositories interface {
@@ -11,19 +11,19 @@ type Repositories interface {
 }
 
 type repositories struct {
-	cfg  *config.Config
-	log  *log.Logger
-	db   db.DB
-	keys Keys
+	cfg    *config.Config
+	logger logger.Logger
+	db     db.DB
+	keys   Keys
 }
 
-func New(cfg *config.Config, log *log.Logger, db db.DB) Repositories {
-	keys := NewKeysRepository(cfg, log, db)
+func New(cfg *config.Config, logger logger.Logger, db db.DB) Repositories {
+	keys := NewKeysRepository(cfg, logger, db)
 
 	repo := &repositories{
-		cfg: cfg,
-		log: log,
-		db:  db,
+		cfg:    cfg,
+		logger: logger,
+		db:     db,
 	}
 
 	repo.keys = keys

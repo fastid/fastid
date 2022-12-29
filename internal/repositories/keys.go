@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"github.com/fastid/fastid/internal/config"
 	"github.com/fastid/fastid/internal/db"
+	"github.com/fastid/fastid/internal/logger"
 	"github.com/fastid/fastid/pkg/crypto"
-	log "github.com/sirupsen/logrus"
 )
 
 type Keys interface {
@@ -15,13 +15,13 @@ type Keys interface {
 }
 
 type keys struct {
-	cfg *config.Config
-	log *log.Logger
-	db  db.DB
+	cfg    *config.Config
+	logger logger.Logger
+	db     db.DB
 }
 
-func NewKeysRepository(cfg *config.Config, log *log.Logger, db db.DB) Keys {
-	return &keys{cfg: cfg, log: log, db: db}
+func NewKeysRepository(cfg *config.Config, logger logger.Logger, db db.DB) Keys {
+	return &keys{cfg: cfg, logger: logger, db: db}
 }
 
 func (k *keys) GetKey(ctx context.Context) (keysSchema KeysSchema, err error) {
@@ -32,7 +32,7 @@ func (k *keys) GetKey(ctx context.Context) (keysSchema KeysSchema, err error) {
 	defer connect.Release()
 
 	query := `SELECT unpacking_key, signature_key  FROM keys LIMIT 1`
-	k.log.Traceln("SQL select keys: " + query)
+	k.logger.Tracef(ctx, "SQL select keys: %s", query)
 
 	err = connect.QueryRow(ctx, query).Scan(
 		&keysSchema.UnpackingKey,

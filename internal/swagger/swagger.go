@@ -2,6 +2,7 @@ package swagger
 
 import (
 	"embed"
+	"github.com/fastid/fastid/internal/logger"
 	"github.com/labstack/echo/v4"
 	"io/fs"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 
 import (
 	"github.com/fastid/fastid/internal/config"
-	log "github.com/sirupsen/logrus"
 )
 
 //go:embed assert/*
@@ -21,12 +21,12 @@ type Swagger interface {
 }
 
 type swagger struct {
-	cfg *config.Config
-	log *log.Logger
+	cfg    *config.Config
+	logger logger.Logger
 }
 
-func New(cfg *config.Config, log *log.Logger) Swagger {
-	return &swagger{cfg: cfg, log: log}
+func New(cfg *config.Config, logger logger.Logger) Swagger {
+	return &swagger{cfg: cfg, logger: logger}
 }
 
 func (s *swagger) getFileSystem() http.FileSystem {

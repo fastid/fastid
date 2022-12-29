@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"github.com/fastid/fastid/internal/config"
+	"github.com/fastid/fastid/internal/logger"
 	"github.com/fastid/fastid/internal/services"
 	"github.com/labstack/echo/v4"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -14,13 +14,13 @@ type KeyHandler interface {
 }
 
 type keyHandler struct {
-	cfg *config.Config
-	log *log.Logger
-	srv services.Services
+	cfg    *config.Config
+	logger logger.Logger
+	srv    services.Services
 }
 
-func NewKeyHandler(cfg *config.Config, log *log.Logger, srv services.Services) KeyHandler {
-	return &keyHandler{cfg: cfg, log: log, srv: srv}
+func NewKeyHandler(cfg *config.Config, logger logger.Logger, srv services.Services) KeyHandler {
+	return &keyHandler{cfg: cfg, logger: logger, srv: srv}
 }
 
 func (h *keyHandler) Register(router *echo.Group) {
@@ -64,7 +64,7 @@ func (h *keyHandler) post() echo.HandlerFunc {
 		//if err != nil {
 		//	return err
 		//}
-		h.log.Traceln("Start")
+		h.logger.Trace(e.Request().Context(), "Start")
 
 		err := h.srv.Keys().Key(e.Request().Context())
 		if err != nil {

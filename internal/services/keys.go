@@ -3,28 +3,26 @@ package services
 import (
 	"context"
 	"github.com/fastid/fastid/internal/config"
+	"github.com/fastid/fastid/internal/logger"
 	"github.com/fastid/fastid/internal/repositories"
 	"github.com/fastid/fastid/pkg/crypto"
 	"github.com/ggwhite/go-masker"
-	log "github.com/sirupsen/logrus"
 )
 
 type Keys interface {
 	GenerateKey(ctx context.Context) (cipher string, err error)
 	Key(ctx context.Context) (err error)
-
-	//SetLogger(logger *log.Entry)
 }
 
 type keys struct {
-	log          *log.Logger
 	cfg          *config.Config
+	logger       logger.Logger
 	repositories repositories.Repositories
 	requestID    interface{}
 }
 
-func NewKeyService(cfg *config.Config, logger *log.Logger, repositories repositories.Repositories) Keys {
-	return &keys{cfg: cfg, log: logger, repositories: repositories}
+func NewKeyService(cfg *config.Config, logger logger.Logger, repositories repositories.Repositories) Keys {
+	return &keys{cfg: cfg, logger: logger, repositories: repositories}
 }
 
 // GenerateKey - Generates a key for encryption
@@ -35,13 +33,7 @@ func (k *keys) GenerateKey(ctx context.Context) (cipher string, err error) {
 		return "", err
 	}
 
-	if ctx.Value("requestID") != nil {
-		logger := k.log.WithField("x-request-id", ctx.Value("requestID").(string))
-		logger.Infof("Generate key %s", masker.Address(cipher))
-	} else {
-		k.log.Infof("Generate key %s", masker.Address(cipher))
-	}
-
+	k.logger.Infof(ctx, "Generate key %s", masker.Address(cipher))
 	return cipher, nil
 }
 

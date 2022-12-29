@@ -31,9 +31,12 @@ func HTTP() {
 		internalLog.Fatalln(err.Error())
 	}
 
+	// Context
+	ctx := context.Background()
+
 	// Logger
 	log := logger.New(cfg)
-	log.Infoln("Starting the server")
+	log.Info(ctx, "Starting the server")
 
 	// Echo
 	e := echo.New()
@@ -66,7 +69,7 @@ func HTTP() {
 		LogRequestID: true,
 		LogMethod:    true,
 		LogValuesFunc: func(c echo.Context, values middleware.RequestLoggerValues) error {
-			log := log.WithFields(logrus.Fields{
+			log := log.GetLogger().WithFields(logrus.Fields{
 				"method":       values.Method,
 				"uri":          values.URI,
 				"status":       values.Status,
@@ -87,23 +90,20 @@ func HTTP() {
 		}))
 	}
 
-	// Context
-	ctx := context.Background()
-
 	// DB
 	database, err := db.New(cfg, ctx)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Fatal(ctx, err.Error())
 	}
 
 	// Migrations
 	migration, err := migrations.New(cfg, database)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Fatal(ctx, err.Error())
 	}
 
 	if err = migration.Upgrade(); err != nil {
-		log.Infof("migration %s", err.Error())
+		log.Infof(ctx, "migration %s", err.Error())
 	}
 
 	// Repository
@@ -127,7 +127,7 @@ func HTTP() {
 	// Http server
 	go func() {
 		if err := e.Start(cfg.HTTP.Listen); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("Shutting down the server")
+			log.Fatalf(ctx, "Shutting down the server %s", err.Error())
 		}
 	}()
 
@@ -137,6 +137,6 @@ func HTTP() {
 	ctxShutdown, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := e.Shutdown(ctxShutdown); err != nil {
-		e.Logger.Fatal(err)
+		log.Fatal(ctx, err.Error())
 	}
 }
