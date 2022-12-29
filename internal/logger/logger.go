@@ -2,9 +2,11 @@ package logger
 
 import (
 	"context"
+	"fmt"
 	"github.com/fastid/fastid/internal/config"
 	"github.com/sirupsen/logrus"
 	"os"
+	"runtime"
 	"strings"
 )
 
@@ -35,7 +37,6 @@ func New(cfg *config.Config) Logger {
 
 	l.SetFormatter(&logrus.JSONFormatter{})
 	l.SetOutput(os.Stdout)
-	l.SetReportCaller(false)
 
 	if strings.ToLower(cfg.LOGGER.Level) == "debug" {
 		l.SetLevel(logrus.DebugLevel)
@@ -53,10 +54,17 @@ func New(cfg *config.Config) Logger {
 }
 
 func (l *logger) withField(ctx context.Context) *logrus.Entry {
+	pc := make([]uintptr, 15)
+	n := runtime.Callers(3, pc)
+	frames := runtime.CallersFrames(pc[:n])
+	frame, _ := frames.Next()
+
+	logger := l.logger.WithField("line", fmt.Sprintf("%s:%d", frame.File, frame.Line))
+
 	if ctx.Value(KeyContext("requestID")) != nil {
-		return l.logger.WithField("x-request-id", ctx.Value(KeyContext("requestID")).(string))
+		return logger.WithField("x-request-id", ctx.Value(KeyContext("requestID")).(string))
 	} else {
-		return l.logger.WithField("x-request-id", nil)
+		return logger.WithField("x-request-id", nil)
 	}
 }
 
