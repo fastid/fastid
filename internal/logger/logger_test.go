@@ -16,5 +16,4 @@ func TestLogger(t *testing.T) {
 	ctx := context.TODO()
 	ctxRequestID := context.WithValue(ctx, "requestID", "Test-RequestID")
 	logger.Debug(ctxRequestID, "Test")
-
 }
