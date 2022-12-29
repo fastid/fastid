@@ -18,7 +18,6 @@ type keys struct {
 	cfg          *config.Config
 	logger       logger.Logger
 	repositories repositories.Repositories
-	requestID    interface{}
 }
 
 func NewKeyService(cfg *config.Config, logger logger.Logger, repositories repositories.Repositories) Keys {

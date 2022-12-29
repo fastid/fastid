@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+type RequestID string
+
 type Logger interface {
 	withField(ctx context.Context) *logrus.Entry
 	GetLogger() *logrus.Logger
@@ -52,7 +54,7 @@ func New(cfg *config.Config) Logger {
 
 func (l *logger) withField(ctx context.Context) *logrus.Entry {
 	if ctx.Value("requestID") != nil {
-		return l.logger.WithField("x-request-id", ctx.Value("requestID").(string))
+		return l.logger.WithField("x-request-id", ctx.Value("requestID").(RequestID))
 	} else {
 		return l.logger.WithField("x-request-id", nil)
 	}
