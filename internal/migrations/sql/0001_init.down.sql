@@ -1,2 +1,2 @@
-drop table keys;
+drop table key;
 

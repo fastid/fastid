@@ -26,6 +26,8 @@ func (t *translate) Trans(ctx context.Context, message string) string {
 		return `Поле "Пароль" не заполнено`
 	} else if message == `The "Key" field is not filled` && lang == "ru" {
 		return `Поле "Ключ" не заполнено`
+	} else if message == "The encryption key is already in use" && lang == "ru" {
+		return `Ключ шифрования уже используеться`
 	}
 
 	return message

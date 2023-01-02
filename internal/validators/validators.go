@@ -17,8 +17,9 @@ type Errors struct {
 }
 
 type Error struct {
-	Errors  []Errors `json:"errors,omitempty"`
-	Message string   `json:"message,omitempty"`
+	Errors []Errors `json:"errors"`
+	//Error   string   `json:"error,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 type Validators interface {
