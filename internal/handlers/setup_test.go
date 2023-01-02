@@ -8,6 +8,7 @@ import (
 	"github.com/fastid/fastid/internal/migrations"
 	"github.com/fastid/fastid/internal/repositories"
 	"github.com/fastid/fastid/internal/services"
+	"github.com/fastid/fastid/internal/validators"
 	"github.com/labstack/echo/v4"
 	"testing"
 )
@@ -63,6 +64,10 @@ func setupSuite(tb testing.TB) (func(tb testing.TB), context.Context, *echo.Echo
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
+
+	// Validator
+	validator := validators.New()
+	validator.Register(e)
 
 	group := e.Group("/api/v1")
 	handler.Register(group)
