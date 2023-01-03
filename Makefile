@@ -16,7 +16,7 @@ build:
 
 .PHONY: run
 run: build
-	./${BINARY_NAME} && make clean
+	./${BINARY_NAME} -run && make clean
 
 .PHONY: clean
 clean:
@@ -25,6 +25,10 @@ clean:
 	rm -f coverage.out
 	rm -f coverage.html
 	rm -f gen
+
+.PHONY: createsuperuser
+createsuperuser: build
+	./${BINARY_NAME} -createsuperuser && make clean
 
 .PHONY: test
 test:

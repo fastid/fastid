@@ -1,2 +1,2 @@
-drop table key;
+drop table users;
 

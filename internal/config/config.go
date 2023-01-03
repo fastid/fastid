@@ -10,6 +10,7 @@ type (
 	Config struct {
 		Debug           bool   `yaml:"debug" env:"DEBUG"`
 		ApplicationName string `yaml:"application_name" env-default:"FastID" env:"APPLICATION_NAME"`
+		Salt            string `yaml:"salt" env:"SALT"`
 		HTTP            `yaml:"http"`
 		DATABASE        `yaml:"database"`
 		LOGGER          `yaml:"logger"`

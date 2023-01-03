@@ -1,12 +1,15 @@
-create table key
+create table users
 (
-    signature_key  bytea    not null
+    user_id uuid not null primary key,
+    created_at timestamp with time zone default CURRENT_TIMESTAMP not null,
+    updated_at timestamp with time zone default CURRENT_TIMESTAMP not null,
+    username varchar(200) null,
+    email varchar(200) null,
+    password char(40) null,
+    is_active boolean not null default 'false',
+    is_superuser boolean not null default 'false'
 );
 
--- create table users
--- (
---     user_id    uuid                                               not null primary key,
---     created_at timestamp with time zone default CURRENT_TIMESTAMP not null,
---     updated_at timestamp with time zone default CURRENT_TIMESTAMP not null,
---     sub        bytea                                              not null,
--- );
+
+create index users_username_index on users (username);
+create index users_email_index on users (email);

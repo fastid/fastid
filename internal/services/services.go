@@ -7,32 +7,32 @@ import (
 )
 
 type Services interface {
-	Keys() Keys
 	Server() Server
+	Users() Users
 }
 
 type services struct {
 	cfg          *config.Config
 	logger       logger.Logger
 	repositories repositories.Repositories
-	keys         Keys
 	server       Server
+	users        Users
 }
 
 func New(cfg *config.Config, logger logger.Logger, repositories repositories.Repositories) Services {
-	keys := NewKeyService(cfg, logger, repositories)
 	server := NewServerService(cfg, logger, repositories)
+	users := NewUsersService(cfg, logger, repositories)
 
 	srv := services{cfg: cfg, logger: logger, repositories: repositories}
-	srv.keys = keys
 	srv.server = server
+	srv.users = users
 	return &srv
-}
-
-func (s *services) Keys() Keys {
-	return s.keys
 }
 
 func (s *services) Server() Server {
 	return s.server
+}
+
+func (s *services) Users() Users {
+	return s.users
 }
