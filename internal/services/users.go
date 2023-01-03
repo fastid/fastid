@@ -18,11 +18,8 @@ type UserData struct {
 
 type Users interface {
 	Create(ctx context.Context, user *UserData) (err error)
-
-	//Create(ctx context.Context, username interface{}, email string, password string)
-	//UnlockDatabase(ctx context.Context, key string) bool
-	//CreateSignatureKey(ctx context.Context) (signatureKey string, err error)
-	//GetSignatureKey(ctx context.Context) (signatureKey string, err error)
+	SetActive(ctx context.Context, userID *uuid.UUID, isActive bool) (err error)
+	SetSuperUser(ctx context.Context, userID *uuid.UUID, isSuperUser bool) (err error)
 }
 
 type users struct {
@@ -52,5 +49,26 @@ func (u *users) Create(ctx context.Context, userData *UserData) (err error) {
 
 	userData.UserId = repoUserData.UserId
 	u.logger.Infof(ctx, "Create a new user %s", userData.UserId)
+	return nil
+}
+
+// SetActive - Sets the value user activity
+func (u *users) SetActive(ctx context.Context, userID *uuid.UUID, isActive bool) (err error) {
+	err = u.repositories.Users().SetActive(ctx, userID, isActive)
+	if err != nil {
+		return err
+	}
+
+	u.logger.Infof(ctx, "Set flag is_active %t for user_id %s", isActive, *userID)
+	return nil
+}
+
+// SetSuperUser - Sets the superuser value
+func (u *users) SetSuperUser(ctx context.Context, userID *uuid.UUID, isSuperUser bool) (err error) {
+	err = u.repositories.Users().SetSuperUser(ctx, userID, isSuperUser)
+	if err != nil {
+		return err
+	}
+	u.logger.Infof(ctx, "Set flag is_superuser %t for user_id %s", isSuperUser, *userID)
 	return nil
 }

@@ -138,6 +138,17 @@ func CreateSuperUser() {
 			if err != nil {
 				return
 			}
+
+			err = srv.Users().SetActive(ctx, &userData.UserId, true)
+			if err != nil {
+				return
+			}
+
+			err = srv.Users().SetSuperUser(ctx, &userData.UserId, true)
+			if err != nil {
+				return
+			}
+
 			fmt.Printf("Create user %s\n", userData.UserId)
 			break
 		}
