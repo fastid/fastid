@@ -7,7 +7,6 @@ import (
 )
 
 type Repositories interface {
-	Keys() Keys
 	Users() Users
 }
 
@@ -15,12 +14,10 @@ type repositories struct {
 	cfg    *config.Config
 	logger logger.Logger
 	db     db.DB
-	keys   Keys
 	users  Users
 }
 
 func New(cfg *config.Config, logger logger.Logger, db db.DB) Repositories {
-	keys := NewKeysRepository(cfg, logger, db)
 	users := NewUsersRepository(cfg, logger, db)
 
 	repo := &repositories{
@@ -29,13 +26,8 @@ func New(cfg *config.Config, logger logger.Logger, db db.DB) Repositories {
 		db:     db,
 	}
 
-	repo.keys = keys
 	repo.users = users
 	return repo
-}
-
-func (r *repositories) Keys() Keys {
-	return r.keys
 }
 
 func (r *repositories) Users() Users {
