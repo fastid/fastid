@@ -10,16 +10,19 @@ import (
 )
 
 type UserData struct {
-	Username interface{}
-	Email    string
-	Password string
-	UserId   uuid.UUID
+	Username  interface{} `db:"username"`
+	Email     string      `db:"email"`
+	Password  string      `db:"password"`
+	UserId    uuid.UUID   `db:"user_id"`
+	Active    bool        `db:"is_active"`
+	SuperUser bool        `db:"is_superuser"`
 }
 
 type Users interface {
 	Create(ctx context.Context, user *UserData) (err error)
 	SetActive(ctx context.Context, userID *uuid.UUID, isActive bool) (err error)
 	SetSuperUser(ctx context.Context, userID *uuid.UUID, isSuperUser bool) (err error)
+	GetByEmail(ctx context.Context, email string) (userData UserData, err error)
 }
 
 type users struct {
@@ -48,11 +51,13 @@ func (u *users) Create(ctx context.Context, userData *UserData) (err error) {
 
 	_, err = connect.Exec(
 		ctx,
-		"INSERT INTO users (user_id, username, email, password) VALUES ($1, $2, $3, $4)",
+		"INSERT INTO users (user_id, username, email, password, is_active, is_superuser) VALUES ($1, $2, $3, $4, $5, $6)",
 		userData.UserId,
 		userData.Username,
 		userData.Email,
 		userData.Password,
+		userData.Active,
+		userData.SuperUser,
 	)
 
 	if err != nil {
@@ -96,4 +101,33 @@ func (u *users) SetSuperUser(ctx context.Context, userID *uuid.UUID, isSuperUser
 	}
 
 	return nil
+}
+
+func (u *users) GetByEmail(ctx context.Context, email string) (userData UserData, err error) {
+	u.mutex.Lock()
+	defer u.mutex.Unlock()
+
+	connect, err := u.db.GetConnect().Acquire(ctx)
+	if err != nil {
+		return UserData{}, nil
+	}
+	defer connect.Release()
+
+	err = connect.QueryRow(
+		ctx,
+		"SELECT user_id, username, email, password, is_active, is_superuser FROM users WHERE email = $1",
+		email,
+	).Scan(
+		&userData.UserId,
+		&userData.Username,
+		&userData.Email,
+		&userData.Password,
+		&userData.Active,
+		&userData.SuperUser,
+	)
+
+	if err != nil {
+		return UserData{}, err
+	}
+	return userData, nil
 }

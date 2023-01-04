@@ -60,19 +60,21 @@ func CreateSuperUser() {
 	var password string
 	var email string
 
-	for {
-		fmt.Print("Enter your username:")
-		data, err := reader.ReadString('\n')
-		if err != nil {
-			panic(err)
-		}
-		data = strings.TrimSuffix(data, "\n")
-		data = strings.TrimRight(data, " ")
-		data = strings.TrimLeft(data, " ")
+	if cfg.APP.MasterID == "username" {
+		for {
+			fmt.Print("Enter your username:")
+			data, err := reader.ReadString('\n')
+			if err != nil {
+				panic(err)
+			}
+			data = strings.TrimSuffix(data, "\n")
+			data = strings.TrimRight(data, " ")
+			data = strings.TrimLeft(data, " ")
 
-		if data != "" {
-			username = data
-			break
+			if data != "" {
+				username = data
+				break
+			}
 		}
 	}
 
@@ -92,6 +94,18 @@ func CreateSuperUser() {
 				continue
 			}
 			email = addr.Address
+
+			userData, err := srv.Users().GetByEmail(ctx, email)
+			if err != nil {
+				log.Fatal(ctx, err.Error())
+				return
+			}
+
+			if userData.UserId.String() != "00000000-0000-0000-0000-000000000000" {
+				fmt.Println("The email address is already in use!")
+				continue
+			}
+
 			break
 		}
 	}
@@ -134,18 +148,26 @@ func CreateSuperUser() {
 			break
 		} else if data == "y" {
 			userData := services.UserData{Email: email, Username: username, Password: password}
+
+			if username == "" {
+				userData.Username = nil
+			}
+
 			err := srv.Users().Create(ctx, &userData)
 			if err != nil {
+				log.Fatal(ctx, err.Error())
 				return
 			}
 
 			err = srv.Users().SetActive(ctx, &userData.UserId, true)
 			if err != nil {
+				log.Fatal(ctx, err.Error())
 				return
 			}
 
 			err = srv.Users().SetSuperUser(ctx, &userData.UserId, true)
 			if err != nil {
+				log.Fatal(ctx, err.Error())
 				return
 			}
 

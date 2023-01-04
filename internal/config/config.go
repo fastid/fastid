@@ -10,16 +10,20 @@ type (
 	Config struct {
 		Debug           bool   `yaml:"debug" env:"DEBUG"`
 		ApplicationName string `yaml:"application_name" env-default:"FastID" env:"APPLICATION_NAME"`
-		Salt            string `yaml:"salt" env:"SALT"`
+		APP             `yaml:"app"`
 		HTTP            `yaml:"http"`
 		DATABASE        `yaml:"database"`
 		LOGGER          `yaml:"logger"`
 		VALIDATORS      `yaml:"validators"`
-		ADMIN           `yaml:"admin"`
 	}
 
 	LOGGER struct {
 		Level string `env-required:"true" yaml:"level" env:"LOGGER_LEVEL"`
+	}
+
+	APP struct {
+		Salt     string `yaml:"salt" env:"APP_SALT"`
+		MasterID string `yaml:"master_id" env-default:"email" env:"APP_MASTER_ID"`
 	}
 
 	HTTP struct {
@@ -49,10 +53,6 @@ type (
 		PasswordMaxLength    int     `env-default:"30" yaml:"password_max_length" env:"VALIDATOR_PASSWORD_MAX_LENGTH"`
 		PasswordValidatorURL url.URL `env-default:"/v1/api/validators/password/" yaml:"password_validator_url" env:"VALIDATOR_PASSWORD_VALIDATOR_URL"`
 		EmailValidatorURL    url.URL `env-default:"/v1/api/validators/email/" yaml:"email_validator_url" env:"VALIDATOR_EMAIL_VALIDATOR_URL"`
-	}
-
-	ADMIN struct {
-		USERNAME string `env-default:"admin" yaml:"admin_username" env:"ADMIN_USERNAME"`
 	}
 )
 
