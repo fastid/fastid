@@ -5,7 +5,7 @@ create table users
     updated_at timestamp with time zone default CURRENT_TIMESTAMP not null,
     username varchar(200) null,
     email varchar(200) null,
-    password char(64) null,
+    password char(92) null,
     is_active boolean not null default 'false',
     is_superuser boolean not null default 'false'
 );

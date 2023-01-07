@@ -4,9 +4,11 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"github.com/fastid/fastid/internal/config"
 	"github.com/fastid/fastid/internal/logger"
 	"github.com/fastid/fastid/internal/repositories"
+	"github.com/fastid/fastid/pkg/random"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/pbkdf2"
@@ -46,10 +48,14 @@ func NewUsersService(cfg *config.Config, logger logger.Logger, repositories repo
 // Create a new user
 func (u *users) Create(ctx context.Context, userData *UserData) (err error) {
 
+	fmt.Println(u.HashPassword(userData.Password))
+
 	repoUserData := repositories.UserData{
-		Username: userData.Username,
-		Email:    userData.Email,
-		Password: u.HashPassword(userData.Password),
+		Username:  userData.Username,
+		Email:     userData.Email,
+		Password:  u.HashPassword(userData.Password),
+		Active:    userData.Active,
+		SuperUser: userData.SuperUser,
 	}
 
 	err = u.repositories.Users().Create(ctx, &repoUserData)
@@ -87,8 +93,13 @@ func (u *users) SetSuperUser(ctx context.Context, userID *uuid.UUID, isSuperUser
 func (u *users) HashPassword(password string) string {
 	password = strings.TrimRight(password, " ")
 	password = strings.TrimLeft(password, " ")
-	passwordByte := pbkdf2.Key([]byte(password), []byte(u.cfg.APP.Salt), 390000, sha256.Size, sha256.New)
-	return hex.EncodeToString(passwordByte)
+
+	salt := random.String(20)
+	iter := random.Int(100000, 390000)
+
+	passwordByte := pbkdf2.Key([]byte(password), []byte(salt), iter, sha256.Size, sha256.New)
+
+	return fmt.Sprintf("%d$%s$%s", iter, salt, hex.EncodeToString(passwordByte))
 }
 
 // GetByEmail - Get a user by email
@@ -117,6 +128,7 @@ func (u *users) GetByEmail(ctx context.Context, email string) (userData UserData
 	}, nil
 }
 
+// GetByUsername - Get a user by username
 func (u *users) GetByUsername(ctx context.Context, username string) (userData UserData, err error) {
 	username = strings.TrimRight(username, " ")
 	username = strings.TrimLeft(username, " ")
