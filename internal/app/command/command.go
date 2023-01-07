@@ -76,7 +76,7 @@ func CreateSuperUser() {
 				username = data
 
 				matched, _ := regexp.MatchString(cfg.VALIDATORS.UsernameRegexp, username)
-				if matched == false {
+				if !matched {
 					fmt.Printf("The user name must match the regular expression %s\n", cfg.VALIDATORS.UsernameRegexp)
 					continue
 				}
