@@ -52,6 +52,7 @@ type (
 		PasswordMaxLength    int     `env-default:"30" yaml:"password_max_length" env:"VALIDATOR_PASSWORD_MAX_LENGTH"`
 		PasswordValidatorURL url.URL `env-default:"/v1/api/validators/password/" yaml:"password_validator_url" env:"VALIDATOR_PASSWORD_VALIDATOR_URL"`
 		EmailValidatorURL    url.URL `env-default:"/v1/api/validators/email/" yaml:"email_validator_url" env:"VALIDATOR_EMAIL_VALIDATOR_URL"`
+		UsernameRegexp       string  `env-default:"^[a-zA-Z][a-zA-Z0-9_-]+$" yaml:"username_regexp" env:"VALIDATOR_USERNAME_REGEXP"`
 	}
 )
 

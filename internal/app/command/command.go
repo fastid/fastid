@@ -15,6 +15,7 @@ import (
 	internalLog "log"
 	"net/mail"
 	"os"
+	"regexp"
 	"strings"
 	"syscall"
 )
@@ -73,6 +74,12 @@ func CreateSuperUser() {
 
 			if data != "" {
 				username = data
+
+				matched, _ := regexp.MatchString(cfg.VALIDATORS.UsernameRegexp, username)
+				if matched == false {
+					fmt.Printf("The user name must match the regular expression %s\n", cfg.VALIDATORS.UsernameRegexp)
+					continue
+				}
 
 				userData, err := srv.Users().GetByUsername(ctx, username)
 				if err != nil {
