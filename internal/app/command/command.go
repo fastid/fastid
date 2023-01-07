@@ -135,6 +135,17 @@ func CreateSuperUser() {
 
 		if data != "" {
 			password = data
+
+			if len(password) < cfg.PasswordMinLength {
+				fmt.Printf("\nThe minimum password length must be %d\n", cfg.PasswordMinLength)
+				continue
+			}
+
+			if len(password) > cfg.PasswordMaxLength {
+				fmt.Printf("\nThe maximum password length must be %d\n", cfg.PasswordMaxLength)
+				continue
+			}
+
 			break
 		} else {
 			fmt.Println("")

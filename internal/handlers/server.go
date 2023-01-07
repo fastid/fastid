@@ -30,15 +30,8 @@ func (h *serverHandler) Register(router *echo.Group) {
 }
 
 func (h *serverHandler) get() echo.HandlerFunc {
-	//Ok        string = "ok"
-	//Locked    string = "locked"
-
-	const (
-		NeedSetup string = "need_setup"
-	)
 
 	type Response struct {
-		Status               string `json:"status"`
 		PasswordMinLength    int    `json:"password_min_length"`
 		PasswordMaxLength    int    `json:"password_man_length"`
 		PasswordValidatorURL string `json:"password_validator_url"`
@@ -47,7 +40,6 @@ func (h *serverHandler) get() echo.HandlerFunc {
 
 	return func(e echo.Context) error {
 		response := &Response{
-			Status:               NeedSetup,
 			PasswordMinLength:    h.cfg.PasswordMinLength,
 			PasswordMaxLength:    h.cfg.PasswordMaxLength,
 			PasswordValidatorURL: h.cfg.PasswordValidatorURL.String(),
