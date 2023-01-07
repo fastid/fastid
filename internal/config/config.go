@@ -22,7 +22,6 @@ type (
 	}
 
 	APP struct {
-		Salt     string `yaml:"salt" env:"APP_SALT"`
 		MasterID string `yaml:"master_id" env-default:"email" env:"APP_MASTER_ID"`
 	}
 
