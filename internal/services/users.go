@@ -46,9 +46,6 @@ func NewUsersService(cfg *config.Config, logger logger.Logger, repositories repo
 
 // Create a new user
 func (u *users) Create(ctx context.Context, userData *UserData) (err error) {
-
-	fmt.Println(u.HashPassword(userData.Password))
-
 	repoUserData := repositories.UserData{
 		Username:  userData.Username,
 		Email:     userData.Email,
