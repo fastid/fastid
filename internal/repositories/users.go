@@ -23,6 +23,7 @@ type Users interface {
 	SetActive(ctx context.Context, userID *uuid.UUID, isActive bool) (err error)
 	SetSuperUser(ctx context.Context, userID *uuid.UUID, isSuperUser bool) (err error)
 	GetByEmail(ctx context.Context, email string) (userData UserData, err error)
+	GetByUsername(ctx context.Context, username string) (userData UserData, err error)
 }
 
 type users struct {
@@ -117,6 +118,35 @@ func (u *users) GetByEmail(ctx context.Context, email string) (userData UserData
 		ctx,
 		"SELECT user_id, username, email, password, is_active, is_superuser FROM users WHERE email = $1",
 		email,
+	).Scan(
+		&userData.UserId,
+		&userData.Username,
+		&userData.Email,
+		&userData.Password,
+		&userData.Active,
+		&userData.SuperUser,
+	)
+
+	if err != nil {
+		return UserData{}, err
+	}
+	return userData, nil
+}
+
+func (u *users) GetByUsername(ctx context.Context, username string) (userData UserData, err error) {
+	u.mutex.Lock()
+	defer u.mutex.Unlock()
+
+	connect, err := u.db.GetConnect().Acquire(ctx)
+	if err != nil {
+		return UserData{}, nil
+	}
+	defer connect.Release()
+
+	err = connect.QueryRow(
+		ctx,
+		"SELECT user_id, username, email, password, is_active, is_superuser FROM users WHERE username = $1",
+		username,
 	).Scan(
 		&userData.UserId,
 		&userData.Username,

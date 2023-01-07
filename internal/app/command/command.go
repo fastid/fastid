@@ -73,6 +73,18 @@ func CreateSuperUser() {
 
 			if data != "" {
 				username = data
+
+				userData, err := srv.Users().GetByUsername(ctx, username)
+				if err != nil {
+					log.Fatal(ctx, err.Error())
+					return
+				}
+
+				if userData.UserId.String() != "00000000-0000-0000-0000-000000000000" {
+					fmt.Println("The username is already in use!")
+					continue
+				}
+
 				break
 			}
 		}

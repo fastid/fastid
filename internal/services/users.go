@@ -29,6 +29,7 @@ type Users interface {
 	SetSuperUser(ctx context.Context, userID *uuid.UUID, isSuperUser bool) (err error)
 	HashPassword(password string) string
 	GetByEmail(ctx context.Context, email string) (userData UserData, err error)
+	GetByUsername(ctx context.Context, username string) (userData UserData, err error)
 }
 
 type users struct {
@@ -112,4 +113,28 @@ func (u *users) GetByEmail(ctx context.Context, email string) (userData UserData
 		Active:    getByEmail.Active,
 		SuperUser: getByEmail.SuperUser,
 	}, nil
+}
+
+func (u *users) GetByUsername(ctx context.Context, username string) (userData UserData, err error) {
+	username = strings.TrimRight(username, " ")
+	username = strings.TrimLeft(username, " ")
+	username = strings.ToLower(username)
+
+	getByUsername, err := u.repositories.Users().GetByUsername(ctx, username)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return UserData{}, nil
+		}
+		return UserData{}, err
+	}
+
+	return UserData{
+		UserId:    getByUsername.UserId,
+		Username:  getByUsername.Username,
+		Email:     getByUsername.Email,
+		Password:  getByUsername.Password,
+		Active:    getByUsername.Active,
+		SuperUser: getByUsername.SuperUser,
+	}, nil
+
 }
