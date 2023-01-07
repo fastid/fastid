@@ -13,7 +13,6 @@ import (
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/pbkdf2"
 	"strings"
-	"sync"
 )
 
 type UserData struct {
@@ -35,7 +34,7 @@ type Users interface {
 }
 
 type users struct {
-	mutex        sync.Mutex
+	//mutex        sync.Mutex
 	cfg          *config.Config
 	logger       logger.Logger
 	repositories repositories.Repositories

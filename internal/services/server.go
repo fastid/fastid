@@ -4,7 +4,6 @@ import (
 	"github.com/fastid/fastid/internal/config"
 	"github.com/fastid/fastid/internal/logger"
 	"github.com/fastid/fastid/internal/repositories"
-	"sync"
 )
 
 type Server interface {
@@ -14,11 +13,10 @@ type Server interface {
 }
 
 type server struct {
-	mutex        sync.Mutex
+	//mutex        sync.Mutex
 	cfg          *config.Config
 	logger       logger.Logger
 	repositories repositories.Repositories
-	key          string
 }
 
 func NewServerService(cfg *config.Config, logger logger.Logger, repositories repositories.Repositories) Server {
