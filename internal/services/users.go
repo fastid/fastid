@@ -105,6 +105,8 @@ func (u *users) GetByEmail(ctx context.Context, email string) (userData UserData
 		return UserData{}, err
 	}
 
+	u.logger.Infof(ctx, "Get a user by email %s", email)
+
 	return UserData{
 		UserId:    getByEmail.UserId,
 		Username:  getByEmail.Username,
@@ -127,6 +129,8 @@ func (u *users) GetByUsername(ctx context.Context, username string) (userData Us
 		}
 		return UserData{}, err
 	}
+
+	u.logger.Infof(ctx, "Get a user by username %s", username)
 
 	return UserData{
 		UserId:    getByUsername.UserId,
