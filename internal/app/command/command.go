@@ -153,6 +153,13 @@ func CreateSuperUser() {
 				continue
 			}
 
+			matched, _ := regexp.MatchString(cfg.VALIDATORS.PasswordRegexp, password)
+			if !matched {
+				fmt.Printf("\nThe password must match the regular expression %s\n", cfg.VALIDATORS.PasswordRegexp)
+				fmt.Println(password)
+				continue
+			}
+
 			break
 		} else {
 			fmt.Println("")

@@ -53,6 +53,7 @@ type (
 		PasswordValidatorURL url.URL `env-default:"/v1/api/validators/password/" yaml:"password_validator_url" env:"VALIDATOR_PASSWORD_VALIDATOR_URL"`
 		EmailValidatorURL    url.URL `env-default:"/v1/api/validators/email/" yaml:"email_validator_url" env:"VALIDATOR_EMAIL_VALIDATOR_URL"`
 		UsernameRegexp       string  `env-default:"^[a-zA-Z][a-zA-Z0-9_-]+$" yaml:"username_regexp" env:"VALIDATOR_USERNAME_REGEXP"`
+		PasswordRegexp       string  `env-default:"^[!\"@#$%^&*()_+a-zA-Z0-9_-]+$" yaml:"username_regexp" env:"VALIDATOR_PASSWORD_REGEXP"`
 	}
 )
 
