@@ -1,0 +1,34 @@
+openapi: "3.0.2"
+info:
+  title: FastID
+  version: 0.0.1
+  license:
+    name: MIT License
+    url: https://choosealicense.com/licenses/mit/
+
+paths:
+  /api/v1/server/:
+    get:
+      tags:
+        - Server
+      summary: Server settings and status
+      responses:
+        200:
+          description: Return server settings and status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  password_min_length:
+                    type: number
+                    description: Minimum password length
+                  password_max_length:
+                    type: number
+                    description: Maximum password length
+                  password_validator_url:
+                    type: string
+                    description: Validation link
+                  email_validator_url:
+                    type: string
+                    description: Validation link
